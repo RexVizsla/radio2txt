@@ -23,6 +23,8 @@ while True:
                 n_frames = wav_file.getnframes()
                 # Read all frames from the audio signal
                 frames = wav_file.readframes(n_frames)
+                # Ensure that frames is a multiple of 2 (for int16 dtype)
+                frames += b'\x00' * (len(frames) % 2)
                 # Convert the frames to a numpy array
                 audio = np.frombuffer(frames, dtype=np.int16)
                 # Calculate the root-mean-square (RMS) amplitude of the audio signal
@@ -33,8 +35,8 @@ while True:
                             shutil.move(wav_path, empty_folder)
                             print(f"Moved {filename} to {empty_folder}.")
                             break
-                        except Exception():
-                            print("Cant move file to queue folder, retrying...")
+                        except Exception:
+                            print("Can't move file to empty folder, retrying...")
                             time.sleep(2)
                             continue
                 else:
@@ -43,10 +45,10 @@ while True:
                             shutil.move(wav_path, queue_folder)
                             print(f"Moved {filename} to {queue_folder}.")
                             break
-                        except Exception():
-                            print("Cant move file to queue folder, retrying...")
+                        except Exception:
+                            print("Can't move file to queue folder, retrying...")
                             time.sleep(2)
                             continue
-        except Exception():
+        except Exception:
             print("Can't read file: {}".format(filename))
     time.sleep(2)
